@@ -1,12 +1,11 @@
-import logging, itertools, sqlite3, os, base64
-from flask import Flask
+import logging, itertools, sqlite3, os, base64, hashlib, time
+from flask import Flask, request
 
 if os.path.exists("./game.db"):
   conn = sqlite3.connect("game.db")
   cursor = conn.cursor()
-version = "Alpha 0.0.2"
+version = "Alpha 0.0.3"
 game_version = "2.1"
-l = True # Turns Logging on and off
 
 app = Flask(__name__)
 
@@ -18,6 +17,21 @@ logging.getLogger('werkzeug').disabled = True
 @app.route('/')
 def home():
   return "Server ran with GDServerPy"
+
+@app.route('/accounts/registerGJAccount.php')
+def register_account():
+  payload = request.json
+  username = payload["userName"]
+  password = payload["password"]
+  email = payload["email"]
+  creation_date = int(time.time())
+  if len(username) > 20:
+    return -4
+  if len(cursor.execute(f"SELECT * from accounts WHERE userName='{username}'")):
+    return -2
+  hashed_password = hashlib.sha256(password.encode())
+  cursor.execute(f"INSERT INTO accounts (userName, password, email, registerDate, isActive) VALUES ({username},{hashed_password},{email},{creation_date},1)")
+  return 1
 
 # /===================================/
 #           OPTION FUNCTIONS
@@ -55,6 +69,10 @@ def xor_and_base64(string: str, key: str):
 
 def print_info(text: str):
   print(f"[INFO] {text}")
+
+# /===================================/
+#                START
+# /===================================/
 
 print(f"""
    __________  _____                           ____       
