@@ -4,6 +4,6 @@
 # GDServerPy
 ## How to start a basic server
 1. Run the `main.py` file
-2. Choose option nummber `3` to setup the database
+2. Choose option number `3` to setup the database
 3. Run the `main.py` file again
 4. Choose option `1` to start the server
